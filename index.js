@@ -8,7 +8,7 @@ const io = new Server(server);
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(express.json());
 const chat = require('./services/chat')
 
 
