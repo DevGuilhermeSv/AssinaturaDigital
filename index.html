@@ -28,7 +28,7 @@
       backdrop-filter: blur(10px);
     }
 
-    #mensage-input {
+    .mensage-input {
       width: 90%;
     }
 
@@ -95,7 +95,7 @@
   <div id="container">
     <div id="left-container" class="inner-container">
       <form id="mensage-form" class="form" action="">
-        <input id="mensage-input" autocomplete="off" />
+        <input class="mensage-input" id="mensage-input" autocomplete="off" />
       </form>
       <div id="opcoes">
         <form>
@@ -105,11 +105,11 @@
         <div id="mensagem-criptografada">
 
           <form id="mensage-form" class="form" action="">
-            <input id="mensage-input" autocomplete="off" />
+            <input class="mensage-input" id="mensage-input-cript" autocomplete="off" />
           </form>
           <div id="opcoes">
             <form>
-              <input type="button" value="Enviar Mensagem Criptografada" onclick="enviar()">
+              <input  type="button" value="Enviar Mensagem Criptografada" onclick="enviar()">
             </form>
 
 
@@ -118,7 +118,7 @@
         <div id="mensagem-assinada">
 
           <form id="mensage-form" class="form" action="">
-            <input id="mensage-input" autocomplete="off" />
+            <input class="mensage-input" id="mensage-input-ass" autocomplete="off" />
           </form>
           <div id="opcoes">
             <form>
@@ -148,6 +148,7 @@
   var userform = document.getElementById('username-form');
   var input = document.getElementById('mensage-input');
   var usernameinput = document.getElementById('username-input');
+  var inputMsgCript = document.getElementById('mensage-input-cript');
 
   var users = [];
   mensageform.addEventListener('submit', function (e) {
@@ -240,6 +241,12 @@
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(obj),
 
+    })
+    .then((response)=>{
+      return response.json();
+    })
+    .then((msg)=>{
+      inputMsgCript.setAttribute('value',msg.data);
     })
   }
 </script>
