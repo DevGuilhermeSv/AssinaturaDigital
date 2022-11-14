@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      body { margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+      .form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem;  display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #mensage-form{ background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #input:focus { outline: none; }
+      .form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+
+      #opcoes{
+        border-bottom: 2px solid black;
+        height: 30px;
+        width: 100%;
+        display: flex;
+         justify-content: center;
+      }
+    </style>
+  </head>
+  <body>
+    <ul id="messages"></ul>
+    <div id="opcoes">
+      <form>
+        <input type="button" value="Assinar Mensagem" onclick="assinar()">
+        <input type="button" value="Criptografar Mensagem">
+      </form>
+
+    </div>
+    <div id="detalhes">
+      <textarea name="mensagem" id="" cols="30" rows="10"></textarea>
+      <textarea name="hash" id="" cols="30" rows="10"></textarea>
+      <input type="button" value="Cifrar com chave publica" onclick="cifrar()" >
+      
+    </div>
+    <form id="mensage-form" class="form" action="">
+      <input id="mensage-input" autocomplete="off" /><button>Send</button>
+    </form>
+  </body>
+</html>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io({ autoConnect: false });
+  var mensageform = document.getElementById('mensage-form');
+  var userform = document.getElementById('username-form');
+  var input = document.getElementById('mensage-input');
+  var usernameinput = document.getElementById('username-input');
+
+  var users = [];
+  mensageform.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (input.value) {
+      socket.emit('chat message', input.value);
+      input.value = '';
+    }
+  });
+  userform.addEventListener('submit',function(e){
+    e.preventDefault();
+    debugger
+    if (usernameinput.value) {
+        username = usernameinput.value;
+        socket.auth = { username };
+        socket.connect();
+    }
+  })
+
+  socket.on("users", (users) => {
+    users.forEach((user) => {
+      user.self = user.userID === socket.id;
+      //initReactiveProperties(user);
+    });
+  // put the current user first, and then sort by username
+  this.users = users.sort((a, b) => {
+    if (a.self) return -1;
+    if (b.self) return 1;
+    if (a.username < b.username) return -1;
+    return a.username > b.username ? 1 : 0;
+  });
+});
+  socket.on("user connected", (user) => {
+    this.users.push(user);
+  });
+  socket.on('chat message', function(msg) {
+    var item = document.createElement('li');
+    item.textContent = msg;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+  });
+  socket.on('users'), function(users){
+    var item = document.createElement('li');
+    item.textContent = users;
+    messages.appendChild(item);
+    window.scrollTo(0, document.body.scrollHeight);
+
+  }
+</script>
+<script>
+  function obterMensagem(){
+    return input.value;
+  }
+  function assinar(){
+    var mensagem = obterMensagem();
+    obterChaves();
+
+  }
+  var chaves ={}
+  obterChaves();
+  function obterChaves(){
+    fetch('/generateKeys')
+    .then(response => {
+    // indicates whether the response is successful (status code 200-299) or not
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${reponse.status}`)
+    }
+      return response.json()
+    })
+    .then(data => {
+      chaves=data;
+    })
+  }
+
+  function cifrar(){
+    var mensagem = obterMensagem();
+    
+    fetch("/encript",{
+      method: "POST",
+      body: JSON.stringify({e:chaves.e, chave: chaves.chavePublica})
+    })
+  }
+</script>
