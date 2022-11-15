@@ -1,5 +1,6 @@
 const { json, query } = require('express');
 var express = require('express');
+const md5 = require('js-md5');
 const DataObject = require('../models/DataObject');
 const Keys = require('../models/Keys');
 const RSA = require('../services/RSAService');
@@ -30,5 +31,17 @@ router.post('/decript',function(req,res,next){
   var msgDecriptada = RSA.decrypt(dataObject.mensagem,dataObject.keys.privateKey,dataObject.keys.publicKey);
   res.json({data:msgDecriptada});
 })
-
+router.post('/sign',function(req,res,next){
+  
+  var dataObject = new DataObject(req.body);
+  var hash = md5(dataObject.mensagem);
+  var msgEncriptada = RSA.encrypt(dataObject.mensagem,dataObject.keys.privateKey,dataObject.keys.e);
+  res.json({data:msgEncriptada, hash});
+})
+router.post('/checkSing',function(req,res,next){
+  
+  var dataObject = new DataObject(req.body);
+  var msgEncriptada = RSA.decrypt(dataObject.mensagem,dataObject.keys.publicKey,dataObject.keys.e);
+  res.json({data:msgEncriptada});
+})
 module.exports = router;

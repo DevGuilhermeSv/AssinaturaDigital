@@ -19,7 +19,7 @@
       backdrop-filter: blur(10px);
     }
 
-    #mensage-form {
+    .mensage-form {
       background: rgba(0, 0, 0, 0.15);
       padding: 0.25rem;
       display: flex;
@@ -80,13 +80,7 @@
       flex: 1;
     }
 
-    /* #opcoes{
-        border-bottom: 2px solid black;
-        height: 30px;
-        width: 100%;
-        display: flex;
-         justify-content: center;
-      } */
+
   </style>
 </head>
 
@@ -94,8 +88,8 @@
   <ul id="messages"></ul>
   <div id="container">
     <div id="left-container" class="inner-container">
-      <form id="mensage-form" class="form" action="">
-        <input class="mensage-input" id="mensage-input" autocomplete="off" />
+      <form class="mensage-form" class="form" action="">
+        <input class="mensage-input" id="mensage-input" placeholder="Mensagem em texto Claro" autocomplete="off" />
       </form>
       <div id="opcoes">
         <form>
@@ -104,12 +98,12 @@
         </form>
         <div id="mensagem-criptografada">
 
-          <form id="mensage-form" class="form" action="">
-            <input class="mensage-input" id="mensage-input-cript" autocomplete="off" />
+          <form class="mensage-form" class="form" action="">
+            <input class="mensage-input" id="mensage-input-cript" placeholder="Mensagem Criptografada" autocomplete="off" />
           </form>
           <div id="opcoes">
             <form>
-              <input  type="button" value="Enviar Mensagem Criptografada" onclick="enviar()">
+              <input type="button" value="Enviar Mensagem Criptografada" onclick="enviar()">
             </form>
 
 
@@ -117,8 +111,11 @@
         </div>
         <div id="mensagem-assinada">
 
-          <form id="mensage-form" class="form" action="">
-            <input class="mensage-input" id="mensage-input-ass" autocomplete="off" />
+          <form class="mensage-form" class="form" action="">
+            <input class="mensage-input" id="mensage-input-hash" placeholder="Hash-MD5" autocomplete="off" />
+             </form>
+          <form class="mensage-form" class="form" action="">
+             <input class="mensage-input" id="mensage-input-ass" placeholder="Mensagem Assinada com Chave Privada" autocomplete="off" />
           </form>
           <div id="opcoes">
             <form>
@@ -129,13 +126,13 @@
           </div>
         </div>
       </div>
-        
-      </div>
-      <div id="rigth-container" class="inner-container">
-
-      </div>
 
     </div>
+    <div id="rigth-container" class="inner-container">
+
+    </div>
+
+  </div>
 
 
 </body>
@@ -149,6 +146,8 @@
   var input = document.getElementById('mensage-input');
   var usernameinput = document.getElementById('username-input');
   var inputMsgCript = document.getElementById('mensage-input-cript');
+  var inputMsgAss = document.getElementById('mensage-input-ass');
+  var inputMsgHash = document.getElementById('mensage-input-hash');
 
   var users = [];
   mensageform.addEventListener('submit', function (e) {
@@ -203,8 +202,23 @@
     return input.value;
   }
   function assinar() {
-    var mensagem = obterMensagem();
-    obterChaves();
+    var obj = {
+      mensagem: obterMensagem(),
+      keys: chaves
+    }
+    fetch("/sign", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obj),
+
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((msg) => {
+        inputMsgAss.setAttribute('value', msg.data);
+        inputMsgHash.setAttribute('value', msg.hash);
+      })
 
   }
   var chaves = {}
@@ -242,11 +256,11 @@
       body: JSON.stringify(obj),
 
     })
-    .then((response)=>{
-      return response.json();
-    })
-    .then((msg)=>{
-      inputMsgCript.setAttribute('value',msg.data);
-    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((msg) => {
+        inputMsgCript.setAttribute('value', msg.data);
+      })
   }
 </script>
