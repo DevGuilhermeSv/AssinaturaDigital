@@ -3,45 +3,55 @@ var express = require('express');
 const md5 = require('js-md5');
 const DataObject = require('../models/DataObject');
 const Keys = require('../models/Keys');
+const { auth } = require('../services/auth');
 const RSA = require('../services/RSAService');
 var router = express.Router();
 const rootDir = require('path').resolve('./');
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.sendFile(rootDir+'/index.html');
+router.get('/',auth, function (req, res, next) {
+    res.sendFile(rootDir + '/index.html');
 });
-router.get('/login',function(req,res,next){
-  res.sendFile(rootDir+'/login.html');
+router.get('/login',auth, function (req, res, next) {
+  res.sendFile(rootDir + '/login.html');
 })
-router.post('/login',function(req,res,next){
+router.get('/logout', (req, res) => {
+  req.session.destroy();
   res.redirect('/');
+});
+router.post('/login', function (req, res, next) {
+  
+    session = req.session;
+    session.userid = req.body.user;
+    console.log(req.session)
+    res.redirect('/');
+  
 })
-router.get('/generateKeys',function(req,res,next){
+router.get('/generateKeys', function (req, res, next) {
   res.json(RSA.generate(256));
 })
-router.post('/encript',function(req,res,next){
-  
+router.post('/encript', function (req, res, next) {
+
   var dataObject = new DataObject(req.body);
-  var msgEncriptada = RSA.encrypt(dataObject.mensagem,dataObject.keys.publicKey,dataObject.keys.e);
-  res.json({data:msgEncriptada});
+  var msgEncriptada = RSA.encrypt(dataObject.mensagem, dataObject.keys.publicKey, dataObject.keys.e);
+  res.json({ data: msgEncriptada });
 })
 
-router.post('/decript',function(req,res,next){
+router.post('/decript', function (req, res, next) {
   var dataObject = new DataObject(req.body);
-  var msgDecriptada = RSA.decrypt(dataObject.mensagem,dataObject.keys.privateKey,dataObject.keys.publicKey);
-  res.json({data:msgDecriptada});
+  var msgDecriptada = RSA.decrypt(dataObject.mensagem, dataObject.keys.privateKey, dataObject.keys.publicKey);
+  res.json({ data: msgDecriptada });
 })
-router.post('/sign',function(req,res,next){
-  
+router.post('/sign', function (req, res, next) {
+
   var dataObject = new DataObject(req.body);
   var hash = md5(dataObject.mensagem);
-  var msgEncriptada = RSA.encrypt(dataObject.mensagem,dataObject.keys.privateKey,dataObject.keys.e);
-  res.json({data:msgEncriptada, hash});
+  var msgEncriptada = RSA.encrypt(dataObject.mensagem, dataObject.keys.privateKey, dataObject.keys.e);
+  res.json({ data: msgEncriptada, hash });
 })
-router.post('/checkSing',function(req,res,next){
-  
+router.post('/checkSing', function (req, res, next) {
+
   var dataObject = new DataObject(req.body);
-  var msgEncriptada = RSA.decrypt(dataObject.mensagem,dataObject.keys.publicKey,dataObject.keys.e);
-  res.json({data:msgEncriptada});
+  var msgEncriptada = RSA.decrypt(dataObject.mensagem, dataObject.keys.publicKey, dataObject.keys.e);
+  res.json({ data: msgEncriptada });
 })
 module.exports = router;

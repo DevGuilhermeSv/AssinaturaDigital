@@ -5,7 +5,18 @@ var path = require('path');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+const auth = require('./services/auth')
+var session = require('express-session')
+var cookieParser = require('cookie-parser');
 
+const oneDay = 1000 * 60 * 60 * 24;
+app.use(session({
+    secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
+    saveUninitialized:true,
+    cookie: { maxAge: oneDay },
+    resave: false 
+}));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
