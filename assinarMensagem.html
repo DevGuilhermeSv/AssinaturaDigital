@@ -6,43 +6,78 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assinar Mensagem</title>
 </head>
+<style>
+       body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    textarea {
+        height: 300px;
+        width: 500px;
+    }
+</style>
 <body>
-    <form class="mensage-form" class="form" action="">
+    <div>
+    <div class="mensage-div" class="div" action="">
         <input class="mensage-input" id="private-key" placeholder="Chave Privada" autocomplete="off" />
-      </form>
+      </div>
       
-      <form class="mensage-form" class="form" action="">
+      <div class="mensage-div" class="div" action="">
         <input class="mensage-input" id="public-key" placeholder="Chave Publica" autocomplete="off" />
-      </form>
-      <form>
+      </div>
+      <div>
         <input type="button" value="Gerar par de chaves" onclick="obterChaves()">
         
-      </form>
+      </div>
       
-      <form class="mensage-form" class="form" action="">
-        <input class="mensage-input" id="mensage-input" placeholder="Mensagem em texto Claro" autocomplete="off" />
-      </form>
+      <div class="mensage-div" class="div" action="">
+        <textarea class="mensage-input" id="mensage-input" placeholder="Mensagem em texto Claro" autocomplete="off"></textarea>
+      </div>
     <div id="mensagem-assinada">
 
-        <form class="mensage-form" class="form" action="">
+        <div class="mensage-div" class="div" action="">
           <input class="mensage-input" id="mensage-input-hash" placeholder="Hash-MD5" autocomplete="off" />
-           </form>
-        <form class="mensage-form" class="form" action="">
-           <input class="mensage-input" id="mensage-input-ass" placeholder="Mensagem Assinada com Chave Privada" autocomplete="off" />
-        </form>
+          <input type="button" value="Gerar Hash MD5" onclick="gerarHash()">
+           </div>
+        <div class="mensage-div" class="div" action="">
+           <textarea class="mensage-input" id="mensage-input-ass" placeholder="Mensagem Assinada com Chave Privada" autocomplete="off" ></textarea>
+        </div>
         <div id="opcoes">
-          <form>
+          <div>
             <input type="button" value="Assinar Mensagem" onclick="assinar()">
-          </form>
+          </div>
 
 
         </div>
       </div>
+    </div>
 </body>
 </html>
 <script>
+    var input = document.getElementById('mensage-input');
+    var inputmd5 = document.getElementById('mensage-input-hash');
       function obterMensagem() {
-    return input.value;
+        return input.value;
+    }
+  function gerarHash(){
+    obj ={
+        mensage: obterMensagem()
+    }
+    fetch('/getHash',{
+        method:'POST',
+        headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obj),
+        
+    }).then((response) => {
+        return response.text();
+      })
+      .then((msg) => {
+        inputmd5.setAttribute('value', msg);
+        
+      })
   }
   function assinar() {
     var obj = {
