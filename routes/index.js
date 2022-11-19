@@ -54,7 +54,7 @@ router.post('/sign', function (req, res, next) {
   var dataObject = new DataObject(req.body);
   var hash = md5(dataObject.mensagem);
   var msgEncriptada = RSA.encrypt(dataObject.mensagem, dataObject.keys.privateKey, dataObject.keys.e);
-  res.json({ publicKey : dataObject.keys.publicKey, data: msgEncriptada, hash });
+  res.json({ publicKey : dataObject.keys.publicKey, data: msgEncriptada });
 })
 router.post('/getHash',function(req,res){
   

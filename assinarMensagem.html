@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,7 +8,7 @@
     <title>Assinar Mensagem</title>
 </head>
 <style>
-       body {
+    body {
         height: 100vh;
         display: flex;
         justify-content: center;
@@ -19,85 +20,92 @@
         width: 500px;
     }
 </style>
+
 <body>
     <div>
-    <div class="mensage-div" class="div" action="">
-        <input class="mensage-input" id="private-key" placeholder="Chave Privada" autocomplete="off" />
-      </div>
-      
-      <div class="mensage-div" class="div" action="">
-        <input class="mensage-input" id="public-key" placeholder="Chave Publica" autocomplete="off" />
-      </div>
-      <div>
-        <input type="button" value="Gerar par de chaves" onclick="obterChaves()">
-        
-      </div>
-      
-      <div class="mensage-div" class="div" action="">
-        <textarea class="mensage-input" id="mensage-input" placeholder="Mensagem em texto Claro" autocomplete="off"></textarea>
-      </div>
-    <div id="mensagem-assinada">
 
         <div class="mensage-div" class="div" action="">
-          <input class="mensage-input" id="mensage-input-hash" placeholder="Hash-MD5" autocomplete="off" />
-          <input type="button" value="Gerar Hash MD5" onclick="gerarHash()">
-           </div>
-        <div class="mensage-div" class="div" action="">
-           <textarea class="mensage-input" id="mensage-input-ass" placeholder="Mensagem Assinada com Chave Privada" autocomplete="off" ></textarea>
+            <textarea class="mensage-input" id="mensage-input" placeholder="Mensagem em texto Claro"
+                autocomplete="off"></textarea>
         </div>
-        <div id="opcoes">
-          <div>
-            <input type="button" value="Assinar Mensagem" onclick="assinar()">
-          </div>
+        <div id="mensagem-assinada">
+
+            <div class="mensage-div" class="div" action="">
+                <input class="mensage-input" id="mensage-input-hash" placeholder="Hash-MD5" autocomplete="off" />
+                <input type="button" value="Gerar Hash MD5" onclick="gerarHash()">
+            </div>
+            <div class="mensage-div" class="div" action="">
+                <textarea class="mensage-input" id="mensage-input-ass" placeholder="Mensagem Assinada com Chave Privada"
+                    autocomplete="off"></textarea>
+            </div>
+            <div id="opcoes">
+                <div>
+                    <input type="button" value="Assinar Mensagem" onclick="assinar()">
+                </div>
 
 
+            </div>
         </div>
-      </div>
     </div>
 </body>
+
 </html>
 <script>
     var input = document.getElementById('mensage-input');
     var inputmd5 = document.getElementById('mensage-input-hash');
-      function obterMensagem() {
+    var inputMsgAss = document.getElementById('mensage-input-ass');
+    function obterMensagem() {
         return input.value;
     }
-  function gerarHash(){
-    obj ={
-        mensage: obterMensagem()
-    }
-    fetch('/getHash',{
-        method:'POST',
-        headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(obj),
-        
-    }).then((response) => {
-        return response.text();
-      })
-      .then((msg) => {
-        inputmd5.setAttribute('value', msg);
-        
-      })
-  }
-  function assinar() {
-    var obj = {
-      mensagem: obterMensagem(),
-      keys: chaves
-    }
-    fetch("/sign", {
-      method: "POST",
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(obj),
+    function gerarHash() {
+        obj = {
+            mensage: obterMensagem()
+        }
+        fetch('/getHash', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(obj),
 
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((msg) => {
-        inputMsgAss.setAttribute('value', msg.data);
-        inputMsgHash.setAttribute('value', msg.hash);
-      })
+        }).then((response) => {
+            return response.text();
+        })
+            .then((msg) => {
+                inputmd5.setAttribute('value', msg);
 
-  }
-  var chaves = {}
+            })
+    }
+    function assinar() {
+        var obj = {
+            mensagem: obterMensagem(),
+            keys: chaves
+        }
+        fetch("/sign", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(obj),
+
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((msg) => {
+                inputMsgAss.innerHTML = JSON.stringify(msg);
+            })
+
+    }
+    obterChaves();
+    function obterChaves() {
+        fetch('/generateKeys')
+            .then(response => {
+                // indicates whether the response is successful (status code 200-299) or not
+                if (!response.ok) {
+                    throw new Error(`Request failed with status ${reponse.status}`)
+                }
+                return response.json()
+            })
+            .then(data => {
+                chaves = data;
+            })
+    };
+    var chaves = {}
 </script>
