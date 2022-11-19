@@ -31,6 +31,9 @@ res.sendFile(rootDir+'/encriptMensage.html')
 router.get('/assinarMensagem',(req,res)=>{
   res.sendFile(rootDir+'/assinarMensagem.html')
 })
+router.get('/autenticarMensagem',(req,res)=>{
+  res.sendFile(rootDir+'/autenticarMensagem.html')
+})
 router.get('/decriptMensage',function(req,res){
   res.sendFile(rootDir+'/DecriptMensage.html')
   })

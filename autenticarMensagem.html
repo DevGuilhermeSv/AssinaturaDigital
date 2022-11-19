@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticar Mensagem</title>
+</head>
+<style>
+    body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    textarea {
+        height: 300px;
+        width: 500px;
+    }
+</style>
+
+<body>
+    <div>
+
+        <div class="mensage-div" class="div" action="">
+            <textarea class="mensage-input" id="mensage-input" placeholder="Mensagem Assinada"
+                autocomplete="off"></textarea>
+        </div>
+        <div id="mensagem-assinada">
+
+            <div class="mensage-div" class="div" action="">
+                <input class="mensage-input" id="mensage-input-hash" placeholder="Hash-MD5" autocomplete="off" />
+                <input type="button" value="Decifrar" onclick="decifrar()">
+            </div>
+            <div class="mensage-div" class="div" action="">
+                
+            </div>
+            <div id="opcoes">
+                <div>
+                    <input type="button" value="Autenticar" onclick="autenticar()">
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script>
+    var input = document.getElementById('mensage-input');
+    var inputmd5 = document.getElementById('mensage-input-hash');
+    var inputMsgAss = document.getElementById('mensage-input-ass');
+    function obterMensagem() {
+        return input.value;
+    }
+    function gerarHash() {
+        obj = {
+            mensage: obterMensagem()
+        }
+        fetch('/getHash', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(obj),
+
+        }).then((response) => {
+            return response.text();
+        })
+            .then((msg) => {
+                inputmd5.setAttribute('value', msg);
+
+            })
+    }
+    function assinar() {
+        var obj = {
+            mensagem: obterMensagem(),
+            keys: chaves
+        }
+        fetch("/sign", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(obj),
+
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((msg) => {
+                inputMsgAss.innerHTML = JSON.stringify(msg);
+            })
+
+    }
+    obterChaves();
+    function obterChaves() {
+        fetch('/generateKeys')
+            .then(response => {
+                // indicates whether the response is successful (status code 200-299) or not
+                if (!response.ok) {
+                    throw new Error(`Request failed with status ${reponse.status}`)
+                }
+                return response.json()
+            })
+            .then(data => {
+                chaves = data;
+            })
+    };
+    var chaves = {}
+</script>
