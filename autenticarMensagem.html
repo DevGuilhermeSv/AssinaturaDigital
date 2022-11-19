@@ -56,11 +56,17 @@
     function obterMensagem() {
         return input.value;
     }
-    function gerarHash() {
+    function decifrar() {
+        var content = JSON.parse(obterMensagem());
+        var  mensagem = content.data;
+        var  publicKey = content.publicKey;
         obj = {
-            mensage: obterMensagem()
+            mensagem: mensagem,
+            keys:{
+                publicKey: content.publicKey
+            }
         }
-        fetch('/getHash', {
+        fetch('/checkSing', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(obj),

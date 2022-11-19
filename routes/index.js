@@ -67,7 +67,7 @@ router.post('/getHash',function(req,res){
 router.post('/checkSing', function (req, res, next) {
 
   var dataObject = new DataObject(req.body);
-  var msgEncriptada = RSA.decrypt(dataObject.mensagem, dataObject.keys.publicKey, dataObject.keys.e);
-  res.json({ data: msgEncriptada });
+  var msgEncriptada = RSA.decrypt(dataObject.mensagem, dataObject.keys.publicKey, 65537);
+  res.send( msgEncriptada );
 })
 module.exports = router;
