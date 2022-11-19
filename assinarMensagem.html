@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assinar Mensagem</title>
+</head>
+<body>
+    <form class="mensage-form" class="form" action="">
+        <input class="mensage-input" id="private-key" placeholder="Chave Privada" autocomplete="off" />
+      </form>
+      
+      <form class="mensage-form" class="form" action="">
+        <input class="mensage-input" id="public-key" placeholder="Chave Publica" autocomplete="off" />
+      </form>
+      <form>
+        <input type="button" value="Gerar par de chaves" onclick="obterChaves()">
+        
+      </form>
+      
+      <form class="mensage-form" class="form" action="">
+        <input class="mensage-input" id="mensage-input" placeholder="Mensagem em texto Claro" autocomplete="off" />
+      </form>
+    <div id="mensagem-assinada">
+
+        <form class="mensage-form" class="form" action="">
+          <input class="mensage-input" id="mensage-input-hash" placeholder="Hash-MD5" autocomplete="off" />
+           </form>
+        <form class="mensage-form" class="form" action="">
+           <input class="mensage-input" id="mensage-input-ass" placeholder="Mensagem Assinada com Chave Privada" autocomplete="off" />
+        </form>
+        <div id="opcoes">
+          <form>
+            <input type="button" value="Assinar Mensagem" onclick="assinar()">
+          </form>
+
+
+        </div>
+      </div>
+</body>
+</html>
+<script>
+      function obterMensagem() {
+    return input.value;
+  }
+  function assinar() {
+    var obj = {
+      mensagem: obterMensagem(),
+      keys: chaves
+    }
+    fetch("/sign", {
+      method: "POST",
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(obj),
+
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((msg) => {
+        inputMsgAss.setAttribute('value', msg.data);
+        inputMsgHash.setAttribute('value', msg.hash);
+      })
+
+  }
+  var chaves = {}
+</script>

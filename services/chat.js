@@ -8,14 +8,6 @@ var Users = new Array();
  */
 function chat (io){
   
-  io.use((socket, next) => {
-    const username = socket.handshake.auth.username;
-    if (!username) {
-      return next(new Error("invalid username"));
-    }
-    socket.username = username;
-    next();
-  });
 
 io.on('connection', (socket) => {  
   
@@ -48,10 +40,5 @@ io.on('connection', (socket) => {
     });
   });
 });}
-function sendkey(socket)
-{
-
-}
 
 module.exports = chat;
-/* GET users listing. */

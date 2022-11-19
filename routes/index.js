@@ -1,4 +1,3 @@
-const { json, query } = require('express');
 var express = require('express');
 const md5 = require('js-md5');
 const DataObject = require('../models/DataObject');
@@ -26,14 +25,23 @@ router.post('/login', function (req, res, next) {
     res.redirect('/');
   
 })
+router.get('/encriptMensage',function(req,res){
+res.sendFile(rootDir+'/encriptMensage.html')
+})
+router.get('/assinarMensagem',(req,res)=>{
+  res.sendFile(rootDir+'/assinarMensagem.html')
+})
+router.get('/decriptMensage',function(req,res){
+  res.sendFile(rootDir+'/DecriptMensage.html')
+  })
 router.get('/generateKeys', function (req, res, next) {
-  res.json(RSA.generate(256));
+  res.json(RSA.generate(1024));
 })
 router.post('/encript', function (req, res, next) {
 
   var dataObject = new DataObject(req.body);
   var msgEncriptada = RSA.encrypt(dataObject.mensagem, dataObject.keys.publicKey, dataObject.keys.e);
-  res.json({ data: msgEncriptada });
+  res.json({ publicKey : dataObject.keys.publicKey, data : msgEncriptada });
 })
 
 router.post('/decript', function (req, res, next) {

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decifrando Mensagem</title>
+</head>
+<style>
+    body {
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    textarea {
+        height: 300px;
+        width: 500px;
+    }
+</style>
+
+<body>
+    <div id="rigth-container" class="inner-container">
+        <div id="mensagem-criptografada">
+
+            <textarea class="mensage-input" id="mensage-input-cript" placeholder="Mensagem Criptografada"
+                autocomplete="off">
+                </textarea>
+            <div>
+                <input class="mensage-input" placeholder="Chave privada" id="chave-privada">
+            </div>
+
+        </div>
+        <form>
+            <input type="button" value="Decifrar Mensagem" onclick="decifrar()">
+        </form>
+        <textarea name="Texto-Claro" placeholder="Mensagem em texto claro" id="mensage" cols="30" rows="10"></textarea>
+
+        <!-- <div id="opcoes">        
+          <div id="mensagem-assinada">
+            <form class="mensage-form" class="form" action="">
+              <input class="mensage-input" id="mensage-input-ass" placeholder="Mensagem Assinada com Chave Privada" autocomplete="off" />
+           </form>
+            <form class="mensage-form" class="form" action="">
+              <input class="mensage-input" id="mensage-input-hash" placeholder="Hash-MD5" autocomplete="off" />
+               </form>
+           
+            <div id="opcoes">
+              <form>
+                <input type="button" value="Verificar Mensagem Assinada" onclick="verificar()">
+              </form>
+  
+  
+            </div>
+          </div>
+        </div> -->
+
+    </div>
+</body>
+
+</html>
+<script>
+    var input = document.getElementById('mensage-input-cript');
+    var privatekey = document.getElementById('chave-privada');
+    var publickey = document.getElementById('chave-publica')
+    var mensage = document.getElementById('mensage');
+    function decifrar() {
+        var content = JSON.parse(input.value);
+        var data = content.data;
+        var publicKey = content.publicKey;
+        var obj = {
+            mensagem: data,
+            keys: {
+                privateKey: privatekey.value,
+                publicKey: publicKey
+            }
+        }
+
+        fetch("/decript", {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(obj),
+
+        })
+            .then((response) => {
+                return response.json();
+            })
+            .then((msg) => {
+
+                mensage.innerHTML = msg.data;
+
+            })
+    }
+</script>
